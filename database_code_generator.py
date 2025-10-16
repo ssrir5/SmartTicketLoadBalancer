@@ -40,7 +40,7 @@ def create_custom_tickets(startRange,numberOfTickets,ticket_table):
     teams = ["Team 1", "Team 2", "Team 3", "Team 4"]
     categories = ["OS", "IT", "Network", "Security", "Hardware", "Software"]
     priorities = ["low", "medium", "high"]
-    statuses = ["New", "In Progress", "Resolved", "Closed"]
+    statuses = ["New", "In Progress", "Resolved", "Closed"] # maybe add assigned, new and pending acceptance for broadcast logic
 
     ticket_problems = [
         "Blue screen shows on every startup",

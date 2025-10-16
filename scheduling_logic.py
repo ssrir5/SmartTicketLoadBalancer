@@ -2,6 +2,10 @@
 # Overall Performance, Relatability, avg Completion Time
 # Assign if Available, currentStatus active, load < max cap
 
+"""
+Checks technician database to find all available techs 
+"""
+
 def findAvailableTechnicians(technician_table):
     res = technician_table.scan()
     technicians = res['Items']
@@ -15,6 +19,10 @@ def findAvailableTechnicians(technician_table):
 
     return valid_techs
 
+"""
+Uses performance metric to calculate a score for each tech 
+Score currently based on tech performance, skills, and completion time
+"""
 
 def calculate_ticket_match_rating(technician, ticket):
     DIVISION_BY_ZERO_PAD = 1e-5
@@ -34,6 +42,10 @@ def calculate_ticket_match_rating(technician, ticket):
     )
 
     return total_score
+
+"""
+Takes all available techs and ranks their score to find the top number of techs
+"""
 
 def findHighestMatchingTechnicians(technician_table, ticket, numberOfTechs):
     available_technicians = findAvailableTechnicians(technician_table)

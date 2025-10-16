@@ -2,6 +2,10 @@ import random
 from faker import Faker
 from datetime import datetime
 
+""" 
+Helper Function to find the last ID added to the table
+
+"""
 def findNextIdRange(table,primaryKey):
     # Reads in all table data
     res = table.scan()
@@ -24,6 +28,11 @@ def findNextIdRange(table,primaryKey):
         print("No tickets Found")
         return -1
 
+"""
+Generates ticket data based of schema and adds to
+database based on number of tickets to add
+
+"""
 def create_custom_tickets(startRange,numberOfTickets,ticket_table):
 
     fake = Faker()
@@ -96,6 +105,12 @@ def create_custom_tickets(startRange,numberOfTickets,ticket_table):
         ticket_table.put_item(Item=ticket)
         print(f"Inserted ticket ${ticketId} into table")
 
+
+"""
+Generates technician data based of schema and adds to
+database based on number of techs to add
+
+"""
 def create_custom_technician(startRange,numberOfTickets,technician_table):
     fake = Faker()
     teams = ["Team 1", "Team 2", "Team 3", "Team 4"]
@@ -123,6 +138,10 @@ def create_custom_technician(startRange,numberOfTickets,technician_table):
         technician_table.put_item(Item=tech)
         print(f"Added tech number ${tech_id}")
 
+
+"""
+Outputs table data and iterates through item attributes
+"""
 def print_table_data(table):
     res = table.scan()
     items = res.get('Items', [])

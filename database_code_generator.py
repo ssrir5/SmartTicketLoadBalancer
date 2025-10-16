@@ -1,8 +1,10 @@
 import boto3
 import os
+import sys
 import random
 from faker import Faker
 from datetime import datetime
+from scheduling_logic import findHighestMatchingTechnicians
 
 CREATE_TICKET = False
 CREATE_TECHNICIAN = False
@@ -11,9 +13,11 @@ NUMBER_OF_TECHNICIAN_TO_CREATE = 10
 
 
 def findNextIdRange(table,primaryKey):
+    # Reads in all table data
     res = table.scan()
     tableKeyIds = res['Items']
 
+    # Iterate through table items and add pKey to find max 
     keyIds = []
 
     for item in tableKeyIds:
@@ -129,14 +133,9 @@ def create_custom_technician(startRange,numberOfTickets,technician_table):
         technician_table.put_item(Item=tech)
         print(f"Added tech number ${tech_id}")
 
-
-
 def print_table_data(table):
     res = table.scan()
     items = res.get('Items', [])
-
-    print(items)
-
 
     for item in items:
         print(f"--- Item ---")
@@ -144,10 +143,7 @@ def print_table_data(table):
             print(f"{key}: {value}")
  
 
-
 # Initialize the DynamoDB client with credentials
-import sys
-
 # Validate credentials and region early with clear errors
 AWS_AK = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SK = os.getenv("AWS_SECRET_ACCESS_KEY")
@@ -161,6 +157,8 @@ if not AWS_REGION:
     print("WARNING: AWS_DEFAULT_REGION not set. Falling back to 'us-east-2'.")
     AWS_REGION = 'us-east-2'
 
+# Load session to use Table -------------
+
 session = boto3.Session(
     aws_access_key_id=AWS_AK,
     aws_secret_access_key=AWS_SK,
@@ -170,7 +168,7 @@ session = boto3.Session(
 # Sesh for database 
 dynamodb = session.resource('dynamodb')
 
-#Ticket Table Access
+# Ticket and Technician Access 
 ticket_table = dynamodb.Table("Client_Ticket_Information")
 technician_table = dynamodb.Table("Technician_Information")
 
@@ -189,7 +187,38 @@ if CREATE_TECHNICIAN:
         create_custom_technician(lastId+1,NUMBER_OF_TECHNICIAN_TO_CREATE,technician_table)
 
 # print_table_data(ticket_table)
-print_table_data(technician_table)
+# print_table_data(technician_table)
+
+
+custom_ticket =  {
+    "ticketId": "11",
+    "accessedTime": "14:37",
+    "aiSummary": "System frequently restarts without warning after OS update.",
+    "assignedTeam": "Team 2",
+    "assignedTech": "05",
+    "category": ["OS", "Hardware"],
+    "clientId": "217",
+    "description": "After the recent operating system update, the workstation reboots randomly every few hours, disrupting workflow. Event logs show kernel power errors.",
+    "difficulty": 7,
+    "priority": "high",
+    "referenceTicketIds": ["04", "09"],
+    "requiredSkills": ["OS", "Hardware", "Diagnostics"],
+    "solution": "Pending diagnostic and hardware stress test.",
+    "status": "New",
+    "suggestedFix": "Check for faulty power supply or driver conflicts from previous tickets.",
+    "technicainSkillMatch": 0,
+    "timestamp": "10/15/25",
+    "title": "Random System Reboots After Update"
+}
+
+
+techList = findHighestMatchingTechnicians(technician_table,custom_ticket,5)
+
+for tech in techList:
+    print(f"---------Available Tech--------")
+    print(tech)
+
+
 
 
 

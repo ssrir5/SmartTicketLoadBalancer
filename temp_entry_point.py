@@ -5,10 +5,12 @@ from database_code_generator import create_custom_tickets, create_custom_technic
 from scheduling_logic import findHighestMatchingTechnicians
 
 # Params to set for creating new tech/ticks
-CREATE_TICKET = False
+CREATE_TICKET = True
 CREATE_TECHNICIAN = False
-NUMBER_OF_TICKETS_TO_CREATE = 1
+NUMBER_OF_TICKETS_TO_CREATE = 2
 NUMBER_OF_TECHNICIAN_TO_CREATE = 1
+
+BROADCAST_ON = False
 
 # Initialize the DynamoDB client with credentials
 # Validate credentials and region early with clear errors
@@ -75,16 +77,22 @@ custom_ticket =  {
     "title": "Random System Reboots After Update"
 }
 
-# Number of Techs To broadcast to 
-BROADCAST_TECH_COUNT = 7
 
-# Find the closest tech that match ticket preference and broadcast
-techList = findHighestMatchingTechnicians(technician_table, custom_ticket, BROADCAST_TECH_COUNT)
+if BROADCAST_ON:
+    # Number of Techs To broadcast to 
+    BROADCAST_TECH_COUNT = 7
 
-print(f"Custom Ticket ${custom_ticket['requiredSkills']}")
+    # Find the closest tech that match ticket preference and broadcast
+    techList = findHighestMatchingTechnicians(technician_table, custom_ticket, BROADCAST_TECH_COUNT)
 
-for tech in techList:
-    print(f"---------Available Tech-------- List")
-    print(f"${tech['name']}, ${tech['skills']}")
+    print(f"Custom Ticket ${custom_ticket['requiredSkills']}")
 
+    for tech in techList:
+        print(f"---------Available Tech-------- List")
+        print(f"${tech['name']}, ${tech['skills']}")
+
+
+# Add difficulty for tickets from LLM 
+# Priority Level High,Fast Time, High Difficulty Score  
+# If 0 skills match dont include && metric score < 1001
 
